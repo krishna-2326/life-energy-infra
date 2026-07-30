@@ -6,6 +6,12 @@ const { protectAdmin } = require('../middleware/authMiddleware');
 // GET /api/services - Public list active services
 router.get('/', async (req, res) => {
   try {
+    let count = await Service.countDocuments();
+    if (count === 0) {
+      console.log('[Auto-Seed] Empty services collection detected. Auto-seeding database...');
+      const { runSeeder } = require('./seed');
+      await runSeeder();
+    }
     const services = await Service.find({ isActive: true }).sort({ order: 1, createdAt: -1 });
     res.json({ success: true, count: services.length, data: services });
   } catch (error) {

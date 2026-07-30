@@ -22,9 +22,18 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    // Auto-seed if database is empty
+    let adminCount = await Admin.countDocuments();
+    if (adminCount === 0) {
+      console.log('[Auto-Seed] Empty database detected on login attempt. Seeding database automatically...');
+      const { runSeeder } = require('./seed');
+      await runSeeder();
+      console.log('[Auto-Seed] Initial database seeding completed!');
+    }
+
     const admin = await Admin.findOne({ email: email.toLowerCase().trim() });
     if (!admin) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials or admin not seeded' });
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, admin.password);
