@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
@@ -14,9 +15,16 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please provide email and password' });
     }
 
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Database connection is not active. Please check MONGO_URI in your Render environment variables.' 
+      });
+    }
+
     const admin = await Admin.findOne({ email: email.toLowerCase().trim() });
     if (!admin) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return res.status(401).json({ success: false, message: 'Invalid credentials or admin not seeded' });
     }
 
     const isMatch = await bcrypt.compare(password, admin.password);
@@ -42,7 +50,7 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('[Login Error]', error);
-    res.status(500).json({ success: false, message: 'Server error during login' });
+    res.status(500).json({ success: false, message: `Login error: ${error.message}` });
   }
 });
 
