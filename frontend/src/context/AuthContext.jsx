@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { safeFetchJson } from '../utils/api';
 
 export const AuthContext = createContext();
 
@@ -14,12 +15,11 @@ export const AuthProvider = ({ children }) => {
         return;
       }
       try {
-        const response = await fetch('/api/auth/me', {
+        const data = await safeFetchJson('/api/auth/me', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        const data = await response.json();
         if (data.success) {
           setAdmin(data.admin);
         } else {
@@ -38,12 +38,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const data = await safeFetchJson('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      const data = await response.json();
       if (data.success) {
         localStorage.setItem('lei_admin_token', data.token);
         setToken(data.token);

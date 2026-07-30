@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Sun, Battery, Zap, Cpu, ShieldCheck, Activity, ArrowRight, CheckCircle } from 'lucide-react';
+import { safeFetchJson } from '../utils/api';
 
 const iconMap = {
   Sun: Sun,
@@ -18,8 +19,7 @@ const ServicesPage = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await fetch('/api/services');
-        const data = await res.json();
+        const data = await safeFetchJson('/api/services');
         if (data.success) {
           setServices(data.data);
         }

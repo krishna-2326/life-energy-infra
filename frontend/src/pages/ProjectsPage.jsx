@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MapPin, Calendar, Zap, Tag, ExternalLink } from 'lucide-react';
+import { safeFetchJson } from '../utils/api';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
@@ -9,8 +10,7 @@ const ProjectsPage = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch('/api/projects');
-        const data = await res.json();
+        const data = await safeFetchJson('/api/projects');
         if (data.success) {
           setProjects(data.data);
         }

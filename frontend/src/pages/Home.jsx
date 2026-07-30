@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Zap, Sun, Battery, ShieldCheck, ArrowRight, CheckCircle2, Building2, TrendingUp, Award, Users } from 'lucide-react';
+import { safeFetchJson } from '../utils/api';
 
 const Home = () => {
   const [services, setServices] = useState([]);
@@ -10,12 +11,10 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [resServices, resProjects] = await Promise.all([
-          fetch('/api/services'),
-          fetch('/api/projects')
+        const [dataServices, dataProjects] = await Promise.all([
+          safeFetchJson('/api/services'),
+          safeFetchJson('/api/projects')
         ]);
-        const dataServices = await resServices.json();
-        const dataProjects = await resProjects.json();
 
         if (dataServices.success) setServices(dataServices.data.slice(0, 3));
         if (dataProjects.success) setProjects(dataProjects.data.slice(0, 2));
