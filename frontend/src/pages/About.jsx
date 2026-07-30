@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ShieldCheck, Target, Eye, Building2, MapPin, Mail, Award, Linkedin, Users } from 'lucide-react';
+import { safeFetchJson } from '../utils/api';
 
 const About = () => {
   const [team, setTeam] = useState([]);
@@ -8,8 +9,7 @@ const About = () => {
   useEffect(() => {
     const fetchTeam = async () => {
       try {
-        const res = await fetch('/api/team');
-        const data = await res.json();
+        const data = await safeFetchJson('/api/team');
         if (data.success) {
           setTeam(data.data);
         }

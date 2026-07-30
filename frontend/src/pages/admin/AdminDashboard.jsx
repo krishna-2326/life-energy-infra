@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { Mail, FileCheck, Wrench, FolderKanban, Briefcase, ArrowRight, ShieldCheck, Activity } from 'lucide-react';
+import { safeFetchJson } from '../../utils/api';
 
 const AdminDashboard = () => {
   const { token } = useContext(AuthContext);
@@ -11,10 +12,9 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch('/api/dashboard/stats', {
+        const data = await safeFetchJson('/api/dashboard/stats', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        const data = await res.json();
         if (data.success) {
           setStats(data.data);
         }
