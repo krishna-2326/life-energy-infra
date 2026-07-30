@@ -37,22 +37,33 @@ const ContactPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      const data = await res.json();
 
-      if (data.success) {
-        setFeedback({ type: 'success', message: 'Inquiry submitted successfully! We will contact you shortly.' });
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          subject: 'General Infrastructure Inquiry',
-          message: ''
-        });
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const data = await res.json();
+        if (data.success) {
+          setFeedback({ type: 'success', message: 'Inquiry submitted successfully! We will contact you shortly.' });
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            subject: 'General Infrastructure Inquiry',
+            message: ''
+          });
+        } else {
+          setFeedback({ type: 'error', message: data.message || 'Failed to send inquiry.' });
+        }
       } else {
-        setFeedback({ type: 'error', message: data.message || 'Failed to send inquiry.' });
+        setFeedback({ 
+          type: 'error', 
+          message: `Server returned status ${res.status}. If your backend service on Render is spinning up, please wait 30 seconds and try submitting again.` 
+        });
       }
     } catch (err) {
-      setFeedback({ type: 'error', message: 'Network error. Please try again.' });
+      setFeedback({ 
+        type: 'error', 
+        message: 'Backend server is taking time to respond (Render free tier wakes up in ~30s). Please wait a moment and click Submit again, or email us directly at lifeenergyinfra@gmail.com' 
+      });
     } finally {
       setSubmitting(false);
     }

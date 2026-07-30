@@ -59,19 +59,30 @@ const CareersPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      const data = await res.json();
 
-      if (data.success) {
-        setFeedback({ type: 'success', message: 'Application submitted successfully! Our HR team will review your application.' });
-        setTimeout(() => {
-          setSelectedJob(null);
-          setFeedback(null);
-        }, 3000);
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const data = await res.json();
+        if (data.success) {
+          setFeedback({ type: 'success', message: 'Application submitted successfully! Our HR team will review your application.' });
+          setTimeout(() => {
+            setSelectedJob(null);
+            setFeedback(null);
+          }, 3000);
+        } else {
+          setFeedback({ type: 'error', message: data.message || 'Failed to submit application. Please check input fields.' });
+        }
       } else {
-        setFeedback({ type: 'error', message: data.message || 'Failed to submit application. Please check input fields.' });
+        setFeedback({ 
+          type: 'error', 
+          message: `Server returned status ${res.status}. If backend on Render is spinning up, please wait 30 seconds and try submitting again.` 
+        });
       }
     } catch (err) {
-      setFeedback({ type: 'error', message: 'Network error. Please try again later.' });
+      setFeedback({ 
+        type: 'error', 
+        message: 'Backend server is taking time to respond (Render free tier wakes up in ~30s). Please try submitting again in a moment.' 
+      });
     } finally {
       setSubmitting(false);
     }
