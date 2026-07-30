@@ -26,7 +26,7 @@ const seedDB = async () => {
     await Application.deleteMany({});
 
     // 1. Seed Admin User
-    const adminEmail = (process.env.ADMIN_DEFAULT_EMAIL || 'admin@lifeenergyinfra.com').toLowerCase().trim();
+    const adminEmail = (process.env.ADMIN_DEFAULT_EMAIL || 'lifeenergyinfra@gmail.com').toLowerCase().trim();
     const rawPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'Admin@123456';
     const hashedPassword = await bcrypt.hash(rawPassword, 10);
 

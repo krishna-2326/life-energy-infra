@@ -27,7 +27,7 @@ const AdminLogin = () => {
   };
 
   const setDemoCredentials = () => {
-    setEmail('admin@lifeenergyinfra.com');
+    setEmail('lifeenergyinfra@gmail.com');
     setPassword('Admin@123456');
   };
 
