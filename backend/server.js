@@ -13,8 +13,22 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Database connection
-connectDB();
+// Database connection & auto-seed if empty
+const { router: seedRouter, runSeeder } = require('./routes/seed');
+const Admin = require('./models/Admin');
+
+connectDB().then(async () => {
+  try {
+    const adminCount = await Admin.countDocuments();
+    if (adminCount === 0) {
+      console.log('[Auto-Seed] No admin user found in database. Running automatic initial database seed...');
+      await runSeeder();
+      console.log('[Auto-Seed] Initial database seed completed successfully!');
+    }
+  } catch (err) {
+    console.error('[Auto-Seed Error]', err.message);
+  }
+});
 
 // API Health Check
 app.get('/api/health', (req, res) => {
@@ -35,6 +49,7 @@ app.use('/api/applications', require('./routes/applications'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/team', require('./routes/team'));
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/seed', seedRouter);
 
 // 404 Handler
 app.use((req, res) => {
